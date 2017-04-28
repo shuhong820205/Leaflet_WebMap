@@ -1,0 +1,269 @@
+<html>
+<head>    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script>L_PREFER_CANVAS = false; L_NO_TOUCH = false; L_DISABLE_3D = false;</script>
+    <script src="https://unpkg.com/leaflet@1.0.1/dist/leaflet.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.0.0/leaflet.markercluster-src.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.0.0/leaflet.markercluster.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.0.0/MarkerCluster.Default.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.0.0/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://rawgit.com/python-visualization/folium/master/folium/templates/leaflet.awesome.rotate.css" />
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    
+	<style> 
+		#map {
+			position : relative;
+			width : 100.0%;
+			height: 100.0%;
+			left: 0.0%;
+			top: 0.0%;
+		}
+		.info {
+			padding: 6px 8px;
+			font: 14px/16px Arial, Helvetica, sans-serif;
+			background: white;
+			background: rgba(255,255,255,0.8);
+			box-shadow: 0 0 15px rgba(0,0,0,0.2);
+			border-radius: 5px;
+		}
+		.info h4 {
+			margin: 0 0 5px;
+			color: #777;
+		}
+		.legend {
+			line-height: 18px;
+			color: #555;
+		}
+		.legend i {
+			width: 18px;
+			height: 18px;
+			float: left;
+			margin-right: 8px;
+			opacity: 0.7;
+		}		
+	</style>
+        
+</head>
+<body>
+
+	<div class="folium-map" id="map" ></div>
+
+<script>
+//	var southWest = L.latLng(21.773930, 119.130792);
+	var southWest = L.latLng(24.732038, 121.208700);
+	var northEast = L.latLng(25.404579, 122.141913);
+	var bounds = L.latLngBounds(southWest, northEast);  
+
+	// initialize the map
+	var map = L.map(
+		'map',
+		{center: [25.079163, 121.548306],
+		zoom: 11.5,
+		maxBounds: bounds,
+		layers: [],
+		worldCopyJump: false,
+		crs: L.CRS.EPSG3857
+		});
+
+	// load a tile layer
+	L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+		{
+		  attribution: 'Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.',
+		  maxZoom: 18,
+		  minZoom: 9
+		}).addTo(map);
+		
+//	$.getJSON("taiwan.geojson",function(taiwanData){
+//		L.geoJson( taiwanData ).addTo(map);
+//	});
+
+//	$.getJSON("part.geojson",function(partData){
+//		L.geoJson( partData ).addTo(map);
+//	});
+	
+//	$.getJSON("part.geojson",function(partData){
+//		L.geoJson( partData, {
+//			style: function(feature){
+//				var fillColor,
+//					density = feature.properties.density;
+//				if ( density > 80 ) fillColor = "#006837";
+//				else if ( density > 40 ) fillColor = "#31a354";
+//				else if ( density > 20 ) fillColor = "#78c679";
+//				else if ( density > 10 ) fillColor = "#c2e699";
+//				else if ( density > 0 ) fillColor = "#ffffcc";
+//				else fillColor = "#f7f7f7";  // no data
+//				return { color: "#999", weight: 1, fillColor: fillColor, fillOpacity: .6 };
+//			},
+//			onEachFeature: function( feature, layer ){
+//				layer.bindPopup( "<strong>" + feature.properties.Name + "</strong><br/>" + feature.properties.density + " rats per square mile" )
+//			}
+//		}).addTo(map);
+//	});
+
+	$.getJSON("id.geojson",function(idData){
+		geojson = L.geoJson( idData, {
+			style: style,
+			onEachFeature: onEachFeature
+		}).addTo(map);
+	});
+
+	function getColor(id) {
+		return id == 1  ? '#FF5151' :
+			   id == 2  ? '#CA8EFF' :
+			   id == 3  ? '#A6FFFF' :
+			   id == 4  ? '#C2FF68' :
+			   id == 5  ? '#FFBB77' :
+			   id == 6  ? '#B9B973' :
+			   id == 7  ? '#9999CC' :
+			   id == 8  ? '#C48888' :
+			   id == 9  ? '#FFFF6F' :
+			   id == 10  ? '#93FF93' :
+			   id == 11  ? '#AAAAFF' :
+			   id == 12  ? '#FF8EFF' :			   
+						  '#f7f7f7';
+	}
+
+	function style(feature) {
+		return {
+			fillColor: getColor(feature.id),
+			weight: 2,
+			opacity: 1,
+			color: 'white',
+			dashArray: '3',
+			fillOpacity: 0.7
+		};
+	}		
+
+	function highlightFeature(e) {
+		var layer = e.target;
+		layer.setStyle({
+			weight: 5,
+			color: '#666',
+			dashArray: '',
+			fillOpacity: 0.7
+		});
+
+		if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+			layer.bringToFront();
+		}
+		info.update(layer.feature.properties);
+	}
+
+	function resetHighlight(e) {
+		geojson.resetStyle(e.target);
+		info.update();
+	}	
+
+	function zoomToFeature(e) {
+		map.fitBounds(e.target.getBounds());
+	}
+	
+	function onEachFeature(feature, layer) {
+		layer.on({
+			mouseover: highlightFeature,
+			mouseout: resetHighlight,
+			click: zoomToFeature
+		});
+	}
+
+	var info = L.control();
+	info.onAdd = function (map) {
+		this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+		this.update();
+		return this._div;
+	};
+	// method that we will use to update the control based on feature properties passed
+	info.update = function (props) {
+		this._div.innerHTML = '<h4>台北市各行政區域</h4>' +  (props ?
+			'<b>' + props.zh + '</b>（' + props.name + '）'
+			: '請選擇行政區域');
+	};
+	info.addTo(map);	
+	
+
+	var legend = L.control({position: 'bottomright'});
+	legend.onAdd = function (map) {
+		var div = L.DomUtil.create('div', 'info legend'),
+			grades = ['萬華', '中正', '大安', '文山', '信義', '南港', '內湖', '士林', '北投', '大同', '中山', '松山'],
+			labels = [];
+
+		// loop through our density intervals and generate a label with a colored square for each interval
+		for (var i = 0; i < grades.length; i++) {
+			div.innerHTML +=
+				'<i style="background:' + getColor(i+1) + '"></i> ' +
+				grades[i] + '<br><br>';
+		}
+		return div;
+	};
+	legend.addTo(map);	
+	
+	
+	
+
+//	$.getJSON("shapeSmall.geojson",function(shapeSmallData){
+//		L.geoJson( shapeSmallData, {
+//			style: function(feature){
+//				var fillColor,
+//					COUNTYNAME = feature.properties.COUNTYNAME;
+//				if ( COUNTYNAME == "臺北市" ) fillColor = "#FBFBFF";
+//				else if ( COUNTYNAME == "新北市" ) fillColor = "#FFC1E0";
+//				else if ( COUNTYNAME == "基隆市" ) fillColor = "#FF5151";
+//				else if ( COUNTYNAME == "桃園市" ) fillColor = "#BE77FF";
+//				else if ( COUNTYNAME == "新竹縣" ) fillColor = "#CECEFF";				
+//				else if ( COUNTYNAME == "新竹市" ) fillColor = "#46A3FF";
+//				else if ( COUNTYNAME == "苗栗縣" ) fillColor = "#CAFFFF";
+//				else if ( COUNTYNAME == "臺中市" ) fillColor = "#C1FFE4";
+//				else if ( COUNTYNAME == "彰化縣" ) fillColor = "#53FF53";
+//				else if ( COUNTYNAME == "雲林縣" ) fillColor = "#B7FF4A";
+//				else if ( COUNTYNAME == "嘉義縣" ) fillColor = "#FFFF6F";
+//				else if ( COUNTYNAME == "嘉義市" ) fillColor = "#FFD306";
+//				else if ( COUNTYNAME == "臺南市" ) fillColor = "#FFDCB9";
+//				else if ( COUNTYNAME == "高雄市" ) fillColor = "#FFCBB3";
+//				else if ( COUNTYNAME == "屏東縣" ) fillColor = "#B87070";
+//				else if ( COUNTYNAME == "南投縣" ) fillColor = "#CDCD9A";
+//				else if ( COUNTYNAME == "宜蘭縣" ) fillColor = "#A3D1D1";
+//				else if ( COUNTYNAME == "花蓮縣" ) fillColor = "#C7C7E2";
+//				else if ( COUNTYNAME == "臺東縣" ) fillColor = "#D2A2CC";
+//				else if ( COUNTYNAME == "金門縣" ) fillColor = "#FFA042";
+//				else if ( COUNTYNAME == "澎湖縣" ) fillColor = "#FFFF37";
+//				else if ( COUNTYNAME == "連江縣" ) fillColor = "#02F78E";				
+//				else fillColor = "#f7f7f7";
+//				return { color: "#999", weight: 1, fillColor: fillColor, fillOpacity: .6 };
+//			},
+//			onEachFeature: function( feature, layer ){
+//				layer.bindPopup( "<strong>" + feature.properties.COUNTYNAME + feature.properties.TOWNNAME +"</strong>")
+//			}
+//		}).addTo(map);
+//	});
+	
+
+	// load GeoJSON from an external file
+	$.getJSON("vdloac.geojson",function(data){
+		var carIcon = L.icon({
+			iconUrl: 'car.png',
+			iconSize: [50,50]
+		});
+		var rodents = L.geoJson(data,{
+			pointToLayer: function(feature,latlng){
+				var marker = L.marker(latlng,{icon: carIcon});
+				marker.bindPopup('VD編號：'+ feature.properties.name + '<br/>' + '位置：' + feature.properties.desc);
+				return marker;
+			}
+		});
+		var clusters = L.markerClusterGroup();
+		clusters.addLayer(rodents);
+		map.addLayer(clusters);
+	});
+
+</script>
+</body>
+</html>
